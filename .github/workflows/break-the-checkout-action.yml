@@ -1,5 +1,8 @@
 name: Break The Checkout Action
 
+permissions:
+  id-token: write
+  
 on:
   workflow_dispatch:
 
