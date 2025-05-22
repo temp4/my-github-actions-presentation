@@ -11,9 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Before Composite action
+      - name: Start Build Indicator
+        env:
+          LIFX_BULB_LOCATION: ${{ vars.LIFX_BULB_LOCATION }}
+          LIFX_TOKEN: ${{ secrets.LIFX_TOKEN }}
         run: |
-          echo "Hello from before composite action"
+          curl -X POST "https://api.lifx.com/v1/lights/$LIFX_BULB_LOCATION/effects/breathe" \
+            -H "Authorization: Bearer $LIFX_TOKEN" \
+            -d 'color=blue' \
+            -d 'period=4' \
+            -d 'cycles=450' \
+            -d 'from_color=pink'
 
       - name: Build and Publish .NET Core App
         uses: devopselvis/build-test-net-core-app-custom-action@main
@@ -22,6 +30,14 @@ jobs:
           project-path: "${{ github.workspace }}/src/my-web-app/my-web-app.csproj"
           output-path: "mywebapp"
 
-      - name: After Composite action
-        run: |
-          echo "Hello from after composite action"
+      - name: Final build status indicator
+        if: success()
+        run: | 
+          curl -X POST "https://api.lifx.com/v1/lights/${{ vars.LIFX_BULB_LOCATION }}/effects/off" -H "Authorization: Bearer ${{ secrets.LIFX_TOKEN }}" -d 'power_off=false'
+          curl -X PUT "https://api.lifx.com/v1/lights/${{ vars.LIFX_BULB_LOCATION }}/state" -H "Authorization: Bearer ${{ secrets.LIFX_TOKEN }}" -d 'color=green'
+        
+      - name: Final build status indicator
+        if: failure()
+        run: | 
+          curl -X POST "https://api.lifx.com/v1/lights/${{ vars.LIFX_BULB_LOCATION }}/effects/off" -H "Authorization: Bearer ${{ secrets.LIFX_TOKEN }}" -d 'power_off=false'
+          curl -X PUT "https://api.lifx.com/v1/lights/${{ vars.LIFX_BULB_LOCATION }}/state" -H "Authorization: Bearer ${{ secrets.LIFX_TOKEN }}" -d 'color=red'
