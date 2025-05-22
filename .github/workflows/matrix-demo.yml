@@ -1,0 +1,30 @@
+name: Matrix Demo Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  demo-matrix:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        node-version: [ '16.x', '18.x', '20.x' ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+      fail-fast: true # Default. If any job in the matrix fails, GitHub Actions will immediately cancel all the other in-progress jobs in that matrix.
+    
+    steps:
+      - name: Announce matrix job
+        run: |
+          echo "This is a matrix job for OS: ${{ matrix.os }}, Node.js version: ${{ matrix.node-version }}"
+
+      - name: Simulate setup of Node.js
+        run: echo "Would set up Node.js ${{ matrix.node-version }} here"
+
+      - name: Simulate install/build/test
+        run: |
+          echo "No source code found. Skipping npm install/build/test steps."
+          echo "If this were a real JavaScript project, we'd run npm install/build/test here."
+
+      - name: Simulate artifact upload
+        run: echo "No test results to upload since no tests were run."
