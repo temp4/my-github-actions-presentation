@@ -13,8 +13,16 @@ jobs:
     steps:
 
       - name: Start Build Indicator
+        env:
+          LIFX_BULB_LOCATION: ${{ vars.LIFX_BULB_LOCATION }}
+          LIFX_TOKEN: ${{ secrets.LIFX_TOKEN }}
         run: |
-        curl -X POST "https://api.lifx.com/v1/lights/${{ vars.LIFX_BULB_LOCATION }}/effects/breathe" -H "Authorization: Bearer ${{ secrets.LIFX_TOKEN }}" -d 'color=blue' -d 'period=4' -d 'cycles=450' -d 'from_color=pink'
+          curl -X POST "https://api.lifx.com/v1/lights/$LIFX_BULB_LOCATION/effects/breathe" \
+            -H "Authorization: Bearer $LIFX_TOKEN" \
+            -d 'color=blue' \
+            -d 'period=4' \
+            -d 'cycles=450' \
+            -d 'from_color=pink'
         
       - name: Checkout code
         uses: actions/checkout@v4
