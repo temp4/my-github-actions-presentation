@@ -1,0 +1,25 @@
+name: Artifact Attestation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create artifact
+        run: echo "hello from attestation demo!" > artifact.txt
+
+      - name: Upload artifact with attestation
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-artifact
+          path: artifact.txt
+          attestation: true
